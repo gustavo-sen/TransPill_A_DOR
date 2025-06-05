@@ -6,15 +6,6 @@ import java_cup.runtime.*;
 %unicode
 %cup
 
-// %{
-//   // Métodos auxiliares para criar Symbols com linha e coluna
-//   private Symbol new symbol(int type) {
-//       return new new symbol(type, yyline, yycolumn);
-//   }
-//   private Symbol new symbol(int type, Object value) {
-//       return new new symbol(type, yyline, yycolumn, value);
-//   }
-// %}
 
 // Definições de macros
 DIGIT   = [0-9]
@@ -35,49 +26,49 @@ WS      = [ \t\r\n]+
 "/*"([^*]|(\*+[^*/]))*"*/"      { /* ignora comentário */ }
 
 // Palavras-chave
-"veja bem"                     { return new symbol(sym.IF); }
-"olha só"                      { return new symbol(sym.ELSE); }
-"so faz"                       { return new symbol(sym.WHILE); }
-"faz e conta, é o bixao mesmo" { return new symbol(sym.FOR); }
-"atmega"                       { return new symbol(sym.RETURN); }
-"bitcoin"                      { return new symbol(sym.TRUE); }
-"nao_bitcoin"                  { return new symbol(sym.FALSE); }
+"veja bem"                     { return new Symbol(sym.IF); }
+"olha só"                      { return new Symbol(sym.ELSE); }
+"so faz"                       { return new Symbol(sym.WHILE); }
+"faz e conta, é o bixao mesmo" { return new Symbol(sym.FOR); }
+"atmega"                       { return new Symbol(sym.RETURN); }
+"bitcoin"                      { return new Symbol(sym.TRUE); }
+"nao_bitcoin"                  { return new Symbol(sym.FALSE); }
 
 // Delimitadores
-",ta ligado?"                  { return new symbol(sym.SEMI); }
-", e digo mais,"               { return new symbol(sym.COMMA); }
-"{"                            { return new symbol(sym.LBRACE); }
-"}"                            { return new symbol(sym.RBRACE); }
+",ta ligado?"                  { return new Symbol(sym.SEMI); }
+", e digo mais,"               { return new Symbol(sym.COMMA); }
+"{"                            { return new Symbol(sym.LBRACE); }
+"}"                            { return new Symbol(sym.RBRACE); }
 
 // Parênteses
-"("                            { return new symbol(sym.LPAREN); }
-")"                            { return new symbol(sym.RPAREN); }
+"("                            { return new Symbol(sym.LPAREN); }
+")"                            { return new Symbol(sym.RPAREN); }
 
 // Operadores aritméticos
-"maizi"                        { return new symbol(sym.PLUS); }
-"menoz"                        { return new symbol(sym.MINUS); }   // operador unário e binário são iguais aqui
-"veiz"                        { return new symbol(sym.MUL); }
-"mei"                         { return new symbol(sym.DIV); }
+"maizi"                        { return new Symbol(sym.PLUS); }
+"menoz"                        { return new Symbol(sym.MINUS); }   // operador unário e binário são iguais aqui
+"veiz"                        { return new Symbol(sym.MUL); }
+"mei"                         { return new Symbol(sym.DIV); }
 
 // Operadores de comparação com dois caracteres (mais específicos primeiro)
-"mais que uma ruma de"          { return new symbol(sym.GE); }
-"menos que uma ruma de"         { return new symbol(sym.LE); }
-"se for"                       { return new symbol(sym.EQ); }
-"pior que nao e"               { return new symbol(sym.NE); }
+"mais que uma ruma de"          { return new Symbol(sym.GE); }
+"menos que uma ruma de"         { return new Symbol(sym.LE); }
+"se for"                       { return new Symbol(sym.EQ); }
+"pior que nao e"               { return new Symbol(sym.NE); }
 
 // Operadores de comparação simples
-"mais maior que"               { return new symbol(sym.GT); }
-"mais menor que"              { return new symbol(sym.LT); }
+"mais maior que"               { return new Symbol(sym.GT); }
+"mais menor que"              { return new Symbol(sym.LT); }
 
 // Números: inteiros ou ponto flutuante
-{DIGITS}"."{DIGITS}             { return new symbol(sym.NUMBER, Double.parseDouble(yytext())); }
-{DIGITS}                       { return new symbol(sym.NUMBER, Double.parseDouble(yytext())); }
+{DIGITS}"."{DIGITS}             { return new Symbol(sym.NUMBER, Double.parseDouble(yytext())); }
+{DIGITS}                       { return new Symbol(sym.NUMBER, Double.parseDouble(yytext())); }
 
 // Operador de atribuição
-"eh"                           { return new symbol(sym.ASSIGN); }
+"eh"                           { return new Symbol(sym.ASSIGN); }
 
 // Identificadores (que não sejam palavras-chave)
-{ID}                           { return new symbol(sym.ID, yytext()); }
+{ID}                           { return new Symbol(sym.ID, yytext()); }
 
 // Qualquer outro caractere inválido causa erro
 .                             { throw new Error("Caracter inválido: " + yytext()); }
