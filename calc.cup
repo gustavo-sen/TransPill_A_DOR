@@ -41,7 +41,7 @@ expr_list
         | WHILE LPAREN expr:e RPAREN LBRACE expr_list:s RBRACE    
             {: while (e == 1.0) { System.out.println("Executando WHILE"); System.out.println(e); } :}
         | IF LPAREN expr:e RPAREN LBRACE expr_list:s RBRACE           
-            {: if (e != 1.0) System.out.println("deu merda"); else System.out.println(s); :}
+            {: if (e != 1.0) System.out.println("deu merda"); else System.out.println(e); :}
         | ID
         ;
 
