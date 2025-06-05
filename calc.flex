@@ -6,7 +6,6 @@ import java_cup.runtime.*;
 %unicode
 %cup
 
-
 // Definições de macros
 DIGIT   = [0-9]
 DIGITS  = {DIGIT}+

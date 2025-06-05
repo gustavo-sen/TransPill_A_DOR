@@ -8,58 +8,55 @@ parser code {:
 
 scan with {: return s.next_token(); :};
 
-terminal RETURN, TRUE, FALSE, SEMI, IF, ELSE, FOR, WHILE, COMMA;
-terminal LBRACE, RBRACE, LPAREN, RPAREN;
-terminal PLUS, MINUS, MUL, DIV;
-terminal GE, LE, EQ, NE, GT, LT;
-terminal NUMBER, ASSIGN, ID, UMINUS;
+// Palavras-chave (keywords) da linguagem
+terminal RETURN, TRUE, FALSE, IF, ELSE, FOR, WHILE;
+
+// Delimitadores e símbolos de agrupamento
+terminal SEMI,   // ponto e vírgula ";"
+         COMMA;  // vírgula ","
+terminal LBRACE, // abre chave "{"
+         RBRACE, // fecha chave "}"
+         LPAREN, // abre parênteses "("
+         RPAREN; // fecha parênteses ")"
+
+// Operadores aritméticos básicos
+terminal PLUS,   // soma "+"
+         MINUS,  // subtração "-"
+         MUL,    // multiplicação "*"
+         DIV;    // divisão "/"
+
+// Operadores relacionais / comparadores
+terminal GE,     // maior ou igual ">="
+         LE,     // menor ou igual "<="
+         EQ,     // igual "=="
+         NE,     // diferente "!="
+         GT,     // maior ">"
+         LT;     // menor "<"
+
+// Outros operadores e tokens importantes
+terminal ASSIGN, // atribuição "="
+         UMINUS; // operador unário menos (para precedência no parser)
+
+// Tokens de valores e identificadores
+terminal NUMBER; // números literais (ex: 123, 4.56)
+terminal ID;     // identificadores (nomes de variáveis, funções etc.)
 
 non terminal            expr_list;
-non terminal stmt, stmt_list, block;
 non terminal Integer    expr;
 
 precedence left PLUS, MINUS;
 precedence left MUL;
 precedence left UMINUS;
 
-expr_list ::= expr_list expr:e SEMI         {: System.out.println(e);:}
-            | expr:e SEMI                   {: System.out.println(e);:}
-;
+expr_list ::= expr_list expr:e SEMI         {: System.out.println(e); :}
+            | expr:e SEMI                   {: System.out.println(e); :}
+            ;
 
-expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
-             | expr:e1 MINUS expr:e2        {: RESULT = e1-e2;       :}
-             | expr:e1 MUL expr:e2          {: RESULT = e1*e2;       :} 
-             | MINUS expr:e                 {: RESULT = -e;          :}
+expr      ::= expr:e1 PLUS expr:e2          {: RESULT = e1 + e2;       :}
+             | expr:e1 MINUS expr:e2        {: RESULT = e1 - e2;       :}
+             | expr:e1 MUL expr:e2          {: RESULT = e1 * e2;       :} 
+             | MINUS expr:e                 {: RESULT = -e;            :}
                %prec UMINUS
-             | LPAREN expr:e RPAREN         {: RESULT = e;           :}
-            //  | NUMBER:n                     {: RESULT = n;           :}
+             | LPAREN expr:e RPAREN         {: RESULT = e;             :}
+            //  | NUMBER:n                     {: RESULT = n;             :}
              ;
-
-// Statement ::= 
-//     WHILE LPAREN expr RPAREN Block
-//     {: 
-//        if (!"boolean".equals($3.type)) {
-//           throw new RuntimeException("Erro: expressão do while deve ser booleana, mas recebeu: " + $3.type);
-//        }
-//        RESULT = new WhileStatement($3, $5);
-//     :}
-//     | FOR LPAREN Expr SEMICOLON Expr SEMICOLON  Expr RPAREN Block
-//     {
-//         // $3 = inicialização
-//         // $5 = condição
-//         // $7 = incremento
-//         // $9 = corpo 
-//         RESULT = new ForStatement($3, $5, $7, $9);
-//     }
-// ;
-
-// // block pq isso é de linguagem superior
-// Block ::= LBRACE stmt_list RBRACE
-//     {: RESULT = new BlockStatement($2); :}
-// ;
-
-// stmt_list ::= stmt_list Statement
-//     {: $1.add($2); RESULT = $1; :}
-//     | /* vazio */
-//     {: RESULT = new java.util.ArrayList(); :}
-// ;
