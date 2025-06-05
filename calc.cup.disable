@@ -1,0 +1,66 @@
+import java_cup.runtime.*;
+import java.io.*;
+
+parser code {:
+    scanner s;
+    parser(scanner s){ this.s=s; }
+:}
+
+scan with {: return s.next_token(); :};
+
+terminal IF, ELSE, RETURN, TRUE, FALSE, ID, SEMI, COMMA, LBRACE, RBRACE, LPAREN, RPAREN;
+terminal PLUS, MINUS, MUL, DIV;
+terminal GE, LE, EQ, NE, GT, LT;
+terminal ASSIGN;
+terminal Double NUMBER;
+
+terminal UMINUS;   
+
+non terminal            expr_list, WHILE, FOR;
+non terminal Integer    expr;
+
+precedence left PLUS, MINUS;
+precedence left MUL;
+precedence left UMINUS;
+
+expr_list ::= expr_list expr:e SEMI         {: System.out.println(e);:}
+            | expr:e SEMI                   {: System.out.println(e);:}
+;
+
+expr      ::= expr:e1 PLUS  expr:e2         {: RESULT = e1+e2;       :}
+             | expr:e1 MINUS expr:e2        {: RESULT = e1-e2;       :}
+             | expr:e1 MUL expr:e2          {: RESULT = e1*e2;       :} 
+             | MINUS expr:e                 {: RESULT = -e;          :}
+               %prec UMINUS
+             | LPAREN expr:e RPAREN         {: RESULT = e;           :}
+             | NUMBER:n                     {: RESULT = n;           :}
+             ;
+
+Statement ::= 
+    WHILE LPAREN expr RPAREN Block
+    {: 
+       if (!"boolean".equals($3.type)) {
+          throw new RuntimeException("Erro: expressão do while deve ser booleana, mas recebeu: " + $3.type);
+       }
+       RESULT = new WhileStatement($3, $5);
+    :}
+    | FOR LPAREN Expr SEMICOLON Expr SEMICOLON  Expr RPAREN Block
+    {
+        // $3 = inicialização
+        // $5 = condição
+        // $7 = incremento
+        // $9 = corpo 
+        RESULT = new ForStatement($3, $5, $7, $9);
+    }
+;
+
+// block pq isso é de linguagem superior
+Block ::= LBRACE stmt_list RBRACE
+    {: RESULT = new BlockStatement($2); :}
+;
+
+stmt_list ::= stmt_list Statement
+    {: $1.add($2); RESULT = $1; :}
+    | /* vazio */
+    {: RESULT = new java.util.ArrayList(); :}
+;

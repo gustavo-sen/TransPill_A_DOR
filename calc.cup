@@ -1,0 +1,22 @@
+import java_cup.runtime.*;
+import java.io.*;
+
+parser code {:
+    scanner s;
+    parser(scanner s){ this.s=s; }
+:}
+
+scan with {: return s.next_token(); :};
+
+terminal RETURN, TRUE, SEMI;
+
+non terminal            expr_list;
+non terminal            expr;
+
+
+expr_list ::= expr_list expr SEMI   
+            | expr SEMI                  
+;
+
+expr      ::= RETURN TRUE
+             ;

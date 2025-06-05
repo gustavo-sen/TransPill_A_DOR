@@ -1,0 +1,26 @@
+import java_cup.runtime.*;
+
+%%
+
+%class scanner
+%unicode
+%cup
+
+DIGIT   = [0-9]
+DIGITS  = {DIGIT}+
+LETTER  = [a-zA-Z]
+ID      = {LETTER}({LETTER}|{DIGIT})*  // não pode iniciar com número, mas pode conter letras e números depois
+WS      = [ \t\r\n]+
+
+%%
+
+// Ignora espaços em branco
+{WS}                             { /* nada */ }
+// Palavras-chave
+
+"atmega"                       { return new Symbol(sym.RETURN); }
+"bitcoin"                      { return new Symbol(sym.TRUE); }
+",ta ligado?"                  { return new Symbol(sym.SEMI); }
+
+// Qualquer outro caractere inválido causa erro
+.                             { throw new Error("Caracter inválido: " + yytext()); }
