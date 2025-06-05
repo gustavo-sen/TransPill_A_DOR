@@ -41,8 +41,8 @@ terminal ASSIGN, // atribuição "="
 terminal NUMBER; // números literais (ex: 123, 4.56)
 terminal ID;     // identificadores (nomes de variáveis, funções etc.)
 
-non terminal            expr_list;
-non terminal Integer    expr;
+non terminal           expr_list;
+non terminal Double    expr;
 
 precedence left PLUS, MINUS;
 precedence left MUL;
@@ -58,5 +58,5 @@ expr      ::= expr:e1 PLUS expr:e2          {: RESULT = e1 + e2;       :}
              | MINUS expr:e                 {: RESULT = -e;            :}
                %prec UMINUS
              | LPAREN expr:e RPAREN         {: RESULT = e;             :}
-            //  | NUMBER:n                     {: RESULT = n;             :}
+             | NUMBER:n                     {: RESULT = (Double) n; :}
              ;
