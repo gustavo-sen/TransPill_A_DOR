@@ -20,10 +20,10 @@ WS      = [ \t\r\n]+
 {WS}                             { /* nada */ }
 
 // // Comentários de linha única
-// "entre nos".*                    { /* ignora comentário */ }
+"entre nos".*                    { /* ignora comentário */ }
 
 // // Comentários de múltiplas linhas
-// "/*"([^*]|(\*+[^*/]))*"*/"      { /* ignora comentário */ }
+"/*"([^*]|(\*+[^*/]))*"*/"      { /* ignora comentário */ }
 
 // Palavras-chave
 "veja bem"                     { return new Symbol(sym.IF); }
@@ -49,6 +49,12 @@ WS      = [ \t\r\n]+
 "menoz"                        { return new Symbol(sym.MINUS); }   // operador unário e binário são iguais aqui
 "veiz"                        { return new Symbol(sym.MUL); }
 "mei"                         { return new Symbol(sym.DIV); }
+// SUGESTAO PARA OPERADORES ARITIMETICOS
+// ":)"                        { return new Symbol(sym.PLUS); }
+// ":("                        { return new Symbol(sym.MINUS); }  
+// "veiz"                        { return new Symbol(sym.MUL); }
+// ":|"                         { return new Symbol(sym.DIV); }
+
 
 // Operadores de comparação com dois caracteres (mais específicos primeiro)
 "mais que uma ruma de"          { return new Symbol(sym.GE); }
@@ -59,6 +65,8 @@ WS      = [ \t\r\n]+
 // Operadores de comparação simples
 "mais maior que"               { return new Symbol(sym.GT); }
 "mais menor que"              { return new Symbol(sym.LT); }
+
+"serasa"                       {return new Symbol(sym.UMINUS);} // quando o omi ta devendo -2 -3 etc
 
 // Números: inteiros ou ponto flutuante
 {DIGITS}"."{DIGITS}             { return new Symbol(sym.NUMBER, Double.parseDouble(yytext())); }

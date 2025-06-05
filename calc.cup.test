@@ -1,0 +1,23 @@
+import java_cup.runtime.*;
+import java.io.*;
+
+parser code {:
+    scanner s;
+    parser(scanner s){ this.s=s; }
+:}
+
+scan with {: return s.next_token(); :};
+
+terminal RETURN, TRUE, FALSE, SEMI, FOR, WHILE, IF, ELSE, COMMA, LBRACE, RBRACE, LPAREN, RPAREN
+        , PLUS, MINUS, MUL, DIV, GE, LE, EQ, NE, GT, LT, NUMBER, ASSIGN, ID;
+
+non terminal            expr_list;
+non terminal            expr;
+
+
+expr_list ::= expr_list expr SEMI   
+            | expr SEMI                  
+;
+
+expr      ::= RETURN TRUE
+             ;
