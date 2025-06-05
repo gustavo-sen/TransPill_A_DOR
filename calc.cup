@@ -1,62 +1,63 @@
 import java_cup.runtime.*;
 import java.io.*;
 
+
 parser code {:
     scanner s;
-    parser(scanner s){ this.s=s; }
+    parser(scanner s) { this.s = s; }
 :}
 
 scan with {: return s.next_token(); :};
 
-// Palavras-chave (keywords) da linguagem
+//simboloso terminais
 terminal RETURN, TRUE, FALSE, IF, ELSE, FOR, WHILE;
+    
+terminal SEMI, COMMA;
+terminal LBRACE, RBRACE, LPAREN, RPAREN;
 
-// Delimitadores e símbolos de agrupamento
-terminal SEMI,   // ponto e vírgula ";"
-         COMMA;  // vírgula ","
-terminal LBRACE, // abre chave "{"
-         RBRACE, // fecha chave "}"
-         LPAREN, // abre parênteses "("
-         RPAREN; // fecha parênteses ")"
+terminal PLUS, MINUS, MUL, DIV;
 
-// Operadores aritméticos básicos
-terminal PLUS,   // soma "+"
-         MINUS,  // subtração "-"
-         MUL,    // multiplicação "*"
-         DIV;    // divisão "/"
+terminal GE, LE, EQ, NE, GT, LT;
 
-// Operadores relacionais / comparadores
-terminal GE,     // maior ou igual ">="
-         LE,     // menor ou igual "<="
-         EQ,     // igual "=="
-         NE,     // diferente "!="
-         GT,     // maior ">"
-         LT;     // menor "<"
+terminal ASSIGN, UMINUS;
 
-// Outros operadores e tokens importantes
-terminal ASSIGN, // atribuição "="
-         UMINUS; // operador unário menos (para precedência no parser)
+terminal NUMBER;
+terminal ID;
 
-// Tokens de valores e identificadores
-terminal NUMBER; // números literais (ex: 123, 4.56)
-terminal ID;     // identificadores (nomes de variáveis, funções etc.)
+// nao terminais
+non terminal             expr_list;
+non terminal Double      expr;
 
-non terminal           expr_list;
-non terminal Double    expr;
-
+//precedencias
+precedence left GT, LT, GE, LE, EQ, NE;
 precedence left PLUS, MINUS;
-precedence left MUL;
-precedence left UMINUS;
+precedence left MUL, DIV;
+precedence right UMINUS;
 
-expr_list ::= expr_list expr:e SEMI         {: System.out.println(e); :}
-            | expr:e SEMI                   {: System.out.println(e); :}
-            ;
+//regras da gramatica
+expr_list
+        ::= expr_list expr:e SEMI   {: System.out.println(e); :}
+        |  expr:e SEMI              {: System.out.println(e); :}
+        | WHILE LPAREN expr:e RPAREN LBRACE expr_list:s RBRACE    
+            {: while (e == 1.0) { System.out.println("Executando WHILE"); System.out.println(e); } :}
+        | IF LPAREN expr:e RPAREN LBRACE expr_list:s RBRACE           
+            {: if (e != 1.0) System.out.println("deu merda"); else System.out.println(s); :}
+        | ID
+        ;
 
-expr      ::= expr:e1 PLUS expr:e2          {: RESULT = e1 + e2;       :}
-             | expr:e1 MINUS expr:e2        {: RESULT = e1 - e2;       :}
-             | expr:e1 MUL expr:e2          {: RESULT = e1 * e2;       :} 
-             | MINUS expr:e                 {: RESULT = -e;            :}
-               %prec UMINUS
-             | LPAREN expr:e RPAREN         {: RESULT = e;             :}
-             | NUMBER:n                     {: RESULT = (Double) n; :}
-             ;
+expr    ::= expr:e1 PLUS  expr:e2   {: RESULT = e1 +  e2; :}
+        |  expr:e1 MINUS expr:e2    {: RESULT = e1 -  e2; :}
+        |  expr:e1 MUL   expr:e2    {: RESULT = e1 *  e2; :}
+        |  expr:e1 DIV   expr:e2    {: if (e2 == 0) throw new Exception("não pode dividir por 0");
+                                       RESULT = e1 / e2; :}
+        |  expr:e1 GE    expr:e2    {: RESULT = (e1 >= e2) ? 1.0 : 0.0; :}
+        |  expr:e1 LE    expr:e2    {: RESULT = (e1 <= e2) ? 1.0 : 0.0; :}
+        |  expr:e1 NE    expr:e2    {: RESULT = (! e1.equals(e2)) ? 1.0 : 0.0; :}
+        |  expr:e1 GT    expr:e2    {: RESULT = (e1 >  e2) ? 1.0 : 0.0; :}
+        |  expr:e1 LT    expr:e2    {: RESULT = (e1 <  e2) ? 1.0 : 0.0; :}
+        |  expr:e1 EQ    expr:e2    {: RESULT = (e1.equals(e2)) ? 1.0 : 0.0; :}
+        |  MINUS expr:e  {: RESULT = -e; :}  %prec UMINUS
+        |  LPAREN expr:e RPAREN     {: RESULT = e; :}
+        |  NUMBER:n                 {: RESULT = (Double) n; :}
+        ;
+
