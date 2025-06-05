@@ -19,17 +19,17 @@ WS      = [ \t\r\n]+
 // Ignora espaços em branco
 {WS}                             { /* nada */ }
 
-// Comentários de linha única
-"entre nos".*                    { /* ignora comentário */ }
+// // Comentários de linha única
+// "entre nos".*                    { /* ignora comentário */ }
 
-// Comentários de múltiplas linhas
-"/*"([^*]|(\*+[^*/]))*"*/"      { /* ignora comentário */ }
+// // Comentários de múltiplas linhas
+// "/*"([^*]|(\*+[^*/]))*"*/"      { /* ignora comentário */ }
 
 // Palavras-chave
 "veja bem"                     { return new Symbol(sym.IF); }
 "olha só"                      { return new Symbol(sym.ELSE); }
 "so faz"                       { return new Symbol(sym.WHILE); }
-"faz e conta, é o bixao mesmo" { return new Symbol(sym.FOR); }
+"faz e conta, e o bixao mesmo" { return new Symbol(sym.FOR); }
 "atmega"                       { return new Symbol(sym.RETURN); }
 "bitcoin"                      { return new Symbol(sym.TRUE); }
 "nao_bitcoin"                  { return new Symbol(sym.FALSE); }
