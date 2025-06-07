@@ -1,63 +1,137 @@
-import java_cup.runtime.*;
-import java.io.*;
-
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.ArrayList;
 
 parser code {:
     scanner s;
-    parser(scanner s) { this.s = s; }
+    public parser(scanner s) {
+        this.s = s;
+    }
 :}
 
 scan with {: return s.next_token(); :};
 
-//simboloso terminais
+terminal BOM_DIA, BOA_TARDE, BOA_NOITE;
+
 terminal RETURN, TRUE, FALSE, IF, ELSE, FOR, WHILE;
-    
 terminal SEMI, COMMA;
 terminal LBRACE, RBRACE, LPAREN, RPAREN;
 
 terminal PLUS, MINUS, MUL, DIV;
-
 terminal GE, LE, EQ, NE, GT, LT;
-
 terminal ASSIGN, UMINUS;
 
 terminal NUMBER;
 terminal ID;
 
-// nao terminais
-non terminal             expr_list;
+non terminal             expr_list, programa, saudacao, function, argumentos;
 non terminal Double      expr;
 
-//precedencias
 precedence left GT, LT, GE, LE, EQ, NE;
 precedence left PLUS, MINUS;
 precedence left MUL, DIV;
 precedence right UMINUS;
 
-//regras da gramatica
+programa
+    ::= saudacao:s expr_list
+      {:
+         /* Se chegarmos aqui, significa que a saudação foi válida.
+            O parser segue para expr_list normalmente. */
+      :}
+      | 
+      function:s 
+    ;
+
+function
+    ::= ID LPAREN RPAREN LBRACE expr_list:s RBRACE
+    {:
+      System.out.println("FUNCARAOO CRIADA");
+    :}
+    | ID LPAREN RPAREN LBRACE RBRACE
+    {:
+      System.out.println("FUNCARAOO CRIADA SEM NADA DENTRO");
+    :}
+    ;
+
+argumentos
+    ::= /* vazio */
+        {: RESULT = new ArrayList(); :}
+    ;
+
+saudacao
+    ::= BOM_DIA:s {: 
+            LocalTime agora = LocalTime.now();
+            int hora = agora.getHour();
+            if (hora >= 5 && hora < 12) {
+                System.out.println("Bom dia, está coerente com o horário.");
+            } else {
+                String fmt = agora.format(DateTimeFormatter.ofPattern("HH:mm"));
+                System.out.println("Saudação incorreta para este horário. Hora atual: " + fmt);
+                System.exit(1);
+            }
+        :}
+    | BOA_TARDE:s {: 
+            LocalTime agora = LocalTime.now();
+            int hora = agora.getHour();
+            if (hora >= 12 && hora < 18) {
+                System.out.println("Boa tarde, está coerente com o horário.");
+            } else {
+                String fmt = agora.format(DateTimeFormatter.ofPattern("HH:mm"));
+                System.out.println("Saudação incorreta para este horário. Hora atual: " + fmt);
+                System.exit(1);
+            }
+        :}
+    | BOA_NOITE:s {: 
+            LocalTime agora = LocalTime.now();
+            int hora = agora.getHour();
+            if ((hora >= 18 && hora <= 23) || (hora >= 0 && hora < 5)) {
+                System.out.println("Boa noite, está coerente com o horário.");
+            } else {
+                String fmt = agora.format(DateTimeFormatter.ofPattern("HH:mm"));
+                System.out.println("Saudação incorreta para este horário. Hora atual: " + fmt);
+                System.exit(1);
+            }
+        :}
+    ;
+
 expr_list
-        ::= expr_list expr:e SEMI   {: System.out.println(e); :}
-        |  expr:e SEMI              {: System.out.println(e); :}
-        | WHILE LPAREN expr:e RPAREN LBRACE expr_list:s RBRACE    
-            {: while (e == 1.0) { System.out.println("Executando WHILE"); System.out.println(e); } :}
-        | IF LPAREN expr:e RPAREN LBRACE expr_list:s RBRACE           
-            {: if (e != 1.0) System.out.println("deu merda"); else System.out.println(e); :}
-        | ID
-        ;
+    ::= expr_list expr:e SEMI   
+        {: System.out.println(e); :}
+    |  expr:e SEMI              
+        {: System.out.println(e); :}
+    |  WHILE LPAREN expr:e RPAREN LBRACE expr_list:s RBRACE    
+        {: 
+            while (e == 1.0) { 
+                System.out.println("Executando WHILE"); 
+                System.out.println(e);
+                break; /* evita loop infinito */
+            } 
+        :}
+    |  IF LPAREN expr:e RPAREN LBRACE expr_list:s RBRACE           
+        {: 
+            if (e != 1.0) 
+                System.out.println("Condição falsa no IF"); 
+            else 
+                System.out.println(e); 
+        :}
+    ;
 
-expr    ::= expr:e1 PLUS  expr:e2   {: RESULT = e1 +  e2; :}
-        |  expr:e1 MINUS expr:e2    {: RESULT = e1 -  e2; :}
-        |  expr:e1 MUL   expr:e2    {: RESULT = e1 *  e2; :}
-        |  expr:e1 DIV   expr:e2    {: if (e2 == 0) throw new Exception("não pode dividir por 0");
-                                       RESULT = e1 / e2; :}
-        |  expr:e1 GE    expr:e2    {: RESULT = (e1 >= e2) ? 1.0 : 0.0; :}
-        |  expr:e1 LE    expr:e2    {: RESULT = (e1 <= e2) ? 1.0 : 0.0; :}
-        |  expr:e1 NE    expr:e2    {: RESULT = (! e1.equals(e2)) ? 1.0 : 0.0; :}
-        |  expr:e1 GT    expr:e2    {: RESULT = (e1 >  e2) ? 1.0 : 0.0; :}
-        |  expr:e1 LT    expr:e2    {: RESULT = (e1 <  e2) ? 1.0 : 0.0; :}
-        |  expr:e1 EQ    expr:e2    {: RESULT = (e1.equals(e2)) ? 1.0 : 0.0; :}
-        |  MINUS expr:e  {: RESULT = -e; :}  %prec UMINUS
-        |  LPAREN expr:e RPAREN     {: RESULT = e; :}
-        |  NUMBER:n                 {: RESULT = (Double) n; :}
-        ;
-
+expr    
+    ::= expr:e1 PLUS expr:e2    {: RESULT = e1 +  e2; :}
+    |  expr:e1 MINUS expr:e2    {: RESULT = e1 -  e2; :}
+    |  expr:e1 MUL   expr:e2    {: RESULT = e1 *  e2; :}
+    |  expr:e1 DIV   expr:e2    {: 
+            if (e2 == 0) throw new Exception("não pode dividir por 0");
+            RESULT = e1 / e2; 
+        :}
+    |  expr:e1 GE    expr:e2    {: RESULT = (e1 >= e2) ? 1.0 : 0.0; :}
+    |  expr:e1 LE    expr:e2    {: RESULT = (e1 <= e2) ? 1.0 : 0.0; :}
+    |  expr:e1 NE    expr:e2    {: RESULT = (!e1.equals(e2)) ? 1.0 : 0.0; :}
+    |  expr:e1 GT    expr:e2    {: RESULT = (e1 >  e2) ? 1.0 : 0.0; :}
+    |  expr:e1 LT    expr:e2    {: RESULT = (e1 <  e2) ? 1.0 : 0.0; :}
+    |  expr:e1 EQ    expr:e2    {: RESULT = (e1.equals(e2)) ? 1.0 : 0.0; :}
+    |  MINUS expr:e             {: RESULT = -e; :}  %prec UMINUS
+    |  LPAREN expr:e RPAREN     {: RESULT = e; :}
+    |  NUMBER:n                 {: RESULT = (Double) n; :}
+    ;

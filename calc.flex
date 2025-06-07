@@ -1,4 +1,6 @@
 import java_cup.runtime.*;
+import java.util.List;
+import java.util.ArrayList;
 
 %%
 
@@ -16,20 +18,26 @@ WS      = [ \t\r\n]+
 %%
 
 // Ignora espaços em branco
-{WS}                            { /* nada */ }
+{WS}                      { /* nada */ }
 
 // // Comentários de linha única
-"entre nos".*                   { /* ignora comentário */ }
+"entre nos"[^\n]*         { /* ignora comentário */ }
 
 // // Comentários de múltiplas linhas
-"/*"([^*]|(\*+[^*/]))*"*/"      { /* ignora comentário */ }
+"/"([^]|(\+[^/]))"/"      { /* ignora comentário */ }
+
+// Saudações (ignore case e espaços extras)
+ "bom dia"      { return new Symbol(sym.BOM_DIA);   }
+ "boa tarde"    { return new Symbol(sym.BOA_TARDE); }
+ "boa noite"    { return new Symbol(sym.BOA_NOITE); }
+
 
 // Palavras-chave
 "veja bem"                      { return new Symbol(sym.IF); }
 "olha só"                       { return new Symbol(sym.ELSE); }
 "so faz"                        { return new Symbol(sym.WHILE); }
-"faz e conta, e o bixao mesmo"  { return new Symbol(sym.FOR); }
-"atmega"                        { return new Symbol(sym.RETURN); }
+//"faz e conta, e o bixao mesmo"  { return new Symbol(sym.FOR); }
+//"atmega"                        { return new Symbol(sym.RETURN); }
 "bitcoin"                       { return new Symbol(sym.TRUE); }
 "nao_bitcoin"                   { return new Symbol(sym.FALSE); }
 
@@ -45,7 +53,7 @@ WS      = [ \t\r\n]+
 
 // Operadores aritméticos
 "maizi"                         { return new Symbol(sym.PLUS); }
-"menoz"                         { return new Symbol(sym.MINUS); }   // operador unário e binário são iguais aqui
+"-"                             { return new Symbol(sym.MINUS); }   // operador unário e binário são iguais aqui
 "veiz"                          { return new Symbol(sym.MUL); }
 "mei"                           { return new Symbol(sym.DIV); }
 // SUGESTAO PARA OPERADORES ARITIMETICOS

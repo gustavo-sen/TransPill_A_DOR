@@ -1,0 +1,17 @@
+boa noite, ta ligado?
+
+x eh 3, ta ligado?
+
+veja bem(x mais menor que 5){
+    x eh x maizi 2, ta ligado?
+}
+
+funcao duplica(n){
+    retorna n maizi 2, ta ligado?
+}, ta ligado?
+
+y eh duplica(x), ta ligado?
+
+y mais maior que 5, ta ligado?
+
+y eh - y, ta ligado?
