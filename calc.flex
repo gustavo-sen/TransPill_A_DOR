@@ -31,7 +31,6 @@ WS      = [ \t\r\n]+
  "boa tarde"    { return new Symbol(sym.BOA_TARDE); }
  "boa noite"    { return new Symbol(sym.BOA_NOITE); }
 
-
 // Palavras-chave
 "veja bem"                      { return new Symbol(sym.IF); }
 "olha só"                       { return new Symbol(sym.ELSE); }
@@ -87,3 +86,4 @@ WS      = [ \t\r\n]+
 
 // Qualquer outro caractere inválido causa erro
 .                               { throw new Error("Caracter inválido: " + yytext()); }
+

@@ -40,7 +40,7 @@ programa
             O parser segue para expr_list normalmente. */
       :}
       | 
-      function:s 
+      |function:s 
     ;
 
 function
@@ -134,4 +134,5 @@ expr
     |  MINUS expr:e             {: RESULT = -e; :}  %prec UMINUS
     |  LPAREN expr:e RPAREN     {: RESULT = e; :}
     |  NUMBER:n                 {: RESULT = (Double) n; :}
+    |
     ;
